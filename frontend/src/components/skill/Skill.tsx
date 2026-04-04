@@ -2,35 +2,40 @@ import { Button, Statistic } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 
 import styles from './Skill.module.css';
+import { SkillDef } from '../../data/skills';
 
 interface SkillProps {
+  skill: SkillDef;
   coins: number;
-  cost: number;
-  onSpend: (level: number) => void;
+  onSpend: (cost: number, level: number) => void;
 }
 
-export const Skill: React.FC<SkillProps> = ({ coins, cost, onSpend }: SkillProps) => {
+export const Skill: React.FC<SkillProps> = ({ skill, coins, onSpend }: SkillProps) => {
   const [level, setLevel] = useState<number>(0);
   const levelRef = useRef(level);
 
   levelRef.current = level;
 
+  const currentCost = skill.cost(level);
+
   const handleSpend = () => {
     const newLevel = level + 1;
     setLevel(newLevel);
-    onSpend(newLevel);
+    onSpend(currentCost, newLevel);
   };
 
   useEffect(() => {
+    const key = `skill_${skill.id}_level`;
+
     const save = () => {
-      localStorage.setItem("level", String(levelRef.current));
+      localStorage.setItem(key, String(levelRef.current));
     }
 
     const load = () => {
-      const oldLevel = localStorage.getItem("level");
+      const saved = localStorage.getItem(key);
 
-      if (oldLevel !== null) {
-        setLevel(Number(oldLevel));
+      if (saved !== null) {
+        setLevel(Number(saved));
       }
     }
 
@@ -41,21 +46,20 @@ export const Skill: React.FC<SkillProps> = ({ coins, cost, onSpend }: SkillProps
       window.removeEventListener("beforeunload", save);
       save();
     };
-   }, [])
+   }, [skill.id])
 
   return (
     <div className={styles.skill}>
-      <div onClick={(e) => e.stopPropagation()}>
-        <Button
-          type="primary"
-          danger
-          disabled={coins < cost}
-          onClick={handleSpend}
-        >
-          Spend {cost} Coins
-        </Button>
-        <Statistic title="Level" value={level} />
-      </div>
+      <Button
+        type="primary"
+        danger
+        disabled={coins < currentCost}
+        onClick={handleSpend}
+      >
+        {skill.name} - {currentCost} Coins
+      </Button>
+      <Statistic title="Level" value={level} />
+      <Statistic title="Effect" value={skill.effect(level)} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 .main {
   :global(.ant-layout) {
-    display: flex;
-    align-items: center;
+    /* display: flex; */
+    /* align-items: center; */
     min-height: 100vh;
     background: white;
 
@@ -20,17 +20,16 @@
       cursor: pointer;
       user-select: none;
       background: white;
-      width: 100%;
+      width: 80%;
     }
 
-    :global(.ant-layout-footer) {
+    :global(.ant-layout-sider) {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
       gap: 16px;
-      width: 100%;
       background: white;
-      padding-bottom: 50px;
+      padding: 16px;
+      width: 20%;
     }
   }
 }
