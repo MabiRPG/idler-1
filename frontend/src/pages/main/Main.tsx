@@ -1,58 +1,80 @@
-import { useEffect, useState } from "react";
-import { Button, Statistic } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, Layout, Statistic } from "antd";
+import styles from "./Main.module.css";
+import { Header, Content, Footer } from "antd/es/layout/layout";
 
 export default function Main() {
-  const [coins, setCoins] = useState(() => {
-    const saved = localStorage.getItem("coins");
-    return saved ? Number(saved) : 0;
-  });
-  const [level, setLevel] = useState(0);
+  const [coins, setCoins] = useState(0);
+  const [autoClicker, setAutoClicker] = useState(0);
+  const coinsRef = useRef(coins);
+  const autoClickerRef = useRef(autoClicker);
+
+  coinsRef.current = coins;
+  autoClickerRef.current = autoClicker;
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.setItem("coins", String(coins));
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [coins]);
+    if (autoClicker === 0) return;
 
-  useEffect(() => {
-    if (level === 0) return;
     const id = setInterval(() => {
-      setCoins((c) => c + level);
+      setCoins((c) => c + autoClicker);
     }, 5000);
+
     return () => clearInterval(id);
-  }, [level]);
+  }, [autoClicker]);
+
+  useEffect(() => {
+    const save = () => {
+      localStorage.setItem("coins", String(coinsRef.current));
+      localStorage.setItem("autoClicker", String(autoClickerRef.current));
+    }
+
+    const load = () => {
+      const oldCoins = localStorage.getItem("coins");
+      const oldAutoClicker = localStorage.getItem("autoClicker");
+
+      if (oldCoins !== null) {
+        setCoins(Number(oldCoins));
+      }
+
+      if (oldAutoClicker !== null) {
+        setAutoClicker(Number(oldAutoClicker));
+      }
+    }
+
+    load();
+    window.addEventListener("beforeunload", save);
+
+    return () => {
+      window.removeEventListener("beforeunload", save);
+      save();
+    };
+  }, [])
+
 
   return (
-    <div
-      onClick={() => setCoins((c) => c + 1)}
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: 48,
-      }}
-    >
-      <Statistic title="Coins" value={coins} />
-      <div
-        style={{ display: "flex", alignItems: "center", gap: 16, marginTop: "auto", marginBottom: 48 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Button
-          type="primary"
-          danger
-          disabled={coins < 5}
-          onClick={() => {
-            setCoins((c) => c - 5);
-            setLevel((p) => p + 1);
-          }}
-        >
-          Spend 5 Coins
-        </Button>
-        <Statistic title="Level" value={level} />
-      </div>
+    <div className={styles.main}>
+      <Layout>
+        <Header>
+          <Statistic title="Coins" value={coins} />
+        </Header>
+        <Content onClick={() => setCoins((c) => c + 1)}>
+          Click to earn coins
+        </Content>
+        <Footer onClick={(e) => e.stopPropagation()}>
+          <Button
+            type="primary"
+            danger
+            disabled={coins < 5}
+            onClick={() => {
+              setCoins((c) => c - 5);
+              setAutoClicker((p) => p + 1);
+            }}
+          >
+            Spend 5 Coins
+          </Button>
+          <Statistic title="Level" value={autoClicker} />
+        </Footer>
+      </Layout>
     </div>
   );
 }

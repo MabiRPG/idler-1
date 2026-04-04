@@ -1,0 +1,36 @@
+.main {
+  :global(.ant-layout) {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    background: white;
+
+    :global(.ant-layout-header) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      width: 100%;
+    }
+
+    :global(.ant-layout-content) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      background: white;
+      width: 100%;
+    }
+
+    :global(.ant-layout-footer) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      background: white;
+      padding-bottom: 50px;
+    }
+  }
+}
