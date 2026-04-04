@@ -5,6 +5,7 @@ import path from "path";
 
 export default defineConfig(() => {
   return {
+    base: '/idler-1/',
     build: {
       outDir: 'build',
     },
