@@ -50,7 +50,7 @@ export const Skill: React.FC<SkillProps> = ({ skill, coins, addCoins, onSpend }:
    }, [skill.id])
 
   const tickRef = useRef(() => {});
-  tickRef.current = () => addCoins(level);
+  tickRef.current = () => addCoins(skill.coinChange(level));
 
   useEffect(() => {
     if (level === 0) return;
