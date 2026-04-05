@@ -7,10 +7,11 @@ import { SkillDef } from '../../data/skills';
 interface SkillProps {
   skill: SkillDef;
   coins: number;
-  onSpend: (cost: number, level: number) => void;
+  addCoins: (amount: number) => void;
+  onSpend: (cost: number) => void;
 }
 
-export const Skill: React.FC<SkillProps> = ({ skill, coins, onSpend }: SkillProps) => {
+export const Skill: React.FC<SkillProps> = ({ skill, coins, addCoins, onSpend }: SkillProps) => {
   const [level, setLevel] = useState<number>(0);
   const levelRef = useRef(level);
 
@@ -21,7 +22,7 @@ export const Skill: React.FC<SkillProps> = ({ skill, coins, onSpend }: SkillProp
   const handleSpend = () => {
     const newLevel = level + 1;
     setLevel(newLevel);
-    onSpend(currentCost, newLevel);
+    onSpend(currentCost);
   };
 
   useEffect(() => {
@@ -47,6 +48,15 @@ export const Skill: React.FC<SkillProps> = ({ skill, coins, onSpend }: SkillProp
       save();
     };
    }, [skill.id])
+
+  const tickRef = useRef(() => {});
+  tickRef.current = () => addCoins(level);
+
+  useEffect(() => {
+    if (level === 0) return;
+    const id = setInterval(() => tickRef.current(), skill.interval);
+    return () => clearInterval(id);
+  }, [level > 0, skill.interval])
 
   return (
     <div className={styles.skill}>

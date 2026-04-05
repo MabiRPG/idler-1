@@ -8,21 +8,13 @@ import { SKILLS } from "@/data/skills";
 
 export const Main: React.FC = () => {
   const [coins, setCoins] = useState<number>(0);
-  const [tickerId, setTickerId] = useState<number>(0);
   const coinsRef = useRef(coins);
-  
+
   coinsRef.current = coins;
 
-  const updateTicker = (level: number) => { 
-    if (tickerId !== null) {
-      clearInterval(tickerId);
-    }
-
-    setTickerId(setInterval(() => {
-      setCoins(c => c + level);
-    }, 5000)
-    );
-  }
+  const addCoins = React.useCallback((amount: number) => {
+    setCoins((c) => c + amount);
+  }, []);
 
   useEffect(() => {
     const save = () => {
@@ -60,7 +52,8 @@ export const Main: React.FC = () => {
                 key={skill.id}
                 skill={skill}
                 coins={coins}
-                onSpend={(cost, level) => { updateTicker(level); setCoins((c) => c - cost); }}
+                addCoins={addCoins}
+                onSpend={(cost) => { setCoins((c) => c - cost); }}
               />
             ))}
           </Sider>
