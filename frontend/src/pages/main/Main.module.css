@@ -11,6 +11,7 @@
       justify-content: center;
       background: white;
       width: 100%;
+      gap: 50px;
     }
 
     :global(.ant-layout-content) {

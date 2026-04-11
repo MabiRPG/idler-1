@@ -7,11 +7,12 @@ import { SkillDef } from '../../data/skills';
 interface SkillProps {
   skill: SkillDef;
   coins: number;
-  addCoins: (amount: number) => void;
+  onUpgrade: (amount: number) => void;
+  onDamage: (amount: number) => void;
   onSpend: (cost: number) => void;
 }
 
-export const Skill: React.FC<SkillProps> = ({ skill, coins, addCoins, onSpend }: SkillProps) => {
+export const Skill: React.FC<SkillProps> = ({ skill, coins, onUpgrade, onDamage, onSpend }: SkillProps) => {
   const [level, setLevel] = useState<number>(0);
   const levelRef = useRef(level);
 
@@ -25,36 +26,39 @@ export const Skill: React.FC<SkillProps> = ({ skill, coins, addCoins, onSpend }:
     onSpend(currentCost);
   };
 
-  useEffect(() => {
-    const key = `skill_${skill.id}_level`;
+  // useEffect(() => {
+  //   const key = `skill_${skill.id}_level`;
 
-    const save = () => {
-      localStorage.setItem(key, String(levelRef.current));
-    }
+  //   const save = () => {
+  //     localStorage.setItem(key, String(levelRef.current));
+  //   }
 
-    const load = () => {
-      const saved = localStorage.getItem(key);
+  //   const load = () => {
+  //     const saved = localStorage.getItem(key);
 
-      if (saved !== null) {
-        setLevel(Number(saved));
-      }
-    }
+  //     if (saved !== null) {
+  //       setLevel(Number(saved));
+  //     }
+  //   }
 
-    load();
-    window.addEventListener("beforeunload", save);
+  //   load();
+  //   window.addEventListener("beforeunload", save);
 
-    return () => {
-      window.removeEventListener("beforeunload", save);
-      save();
-    };
-   }, [skill.id])
+  //   return () => {
+  //     window.removeEventListener("beforeunload", save);
+  //     save();
+  //   };
+  //  }, [skill.id])
 
   const tickRef = useRef(() => {});
-  tickRef.current = () => addCoins(skill.coinChange(level));
+  tickRef.current = () => onDamage(skill.dpsChange(level));
 
   useEffect(() => {
     if (level === 0) return;
+
+    onUpgrade(skill.dpsChange(level) - (level - 1 > 0 ? skill.dpsChange(level - 1) : 0));
     const id = setInterval(() => tickRef.current(), skill.interval);
+
     return () => clearInterval(id);
   }, [level > 0, skill.interval])
 
