@@ -9,12 +9,11 @@ interface SkillProps {
   coins: number;
   isActive: boolean;
   onEquip: () => void;
-  onUpgrade: (amount: number) => void;
   onDamage: (amount: number) => void;
   onSpend: (cost: number) => void;
 }
 
-export const Skill: React.FC<SkillProps> = ({ skill, coins, isActive, onEquip, onUpgrade, onDamage, onSpend }: SkillProps) => {
+export const Skill: React.FC<SkillProps> = ({ skill, coins, isActive, onEquip, onDamage, onSpend }: SkillProps) => {
   const [level, setLevel] = useState<number>(0);
   const levelRef = useRef(level);
 
@@ -28,37 +27,12 @@ export const Skill: React.FC<SkillProps> = ({ skill, coins, isActive, onEquip, o
     onSpend(currentCost);
   };
 
-  // useEffect(() => {
-  //   const key = `skill_${skill.id}_level`;
-
-  //   const save = () => {
-  //     localStorage.setItem(key, String(levelRef.current));
-  //   }
-
-  //   const load = () => {
-  //     const saved = localStorage.getItem(key);
-
-  //     if (saved !== null) {
-  //       setLevel(Number(saved));
-  //     }
-  //   }
-
-  //   load();
-  //   window.addEventListener("beforeunload", save);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", save);
-  //     save();
-  //   };
-  //  }, [skill.id])
-
   const tickRef = useRef(() => {});
   tickRef.current = () => onDamage(skill.dpsChange(level));
 
   useEffect(() => {
     if (level === 0 || !isActive) return;
 
-    onUpgrade(skill.dpsChange(level) - (level - 1 > 0 ? skill.dpsChange(level - 1) : 0));
     const id = setInterval(() => tickRef.current(), skill.interval);
 
     return () => clearInterval(id);
