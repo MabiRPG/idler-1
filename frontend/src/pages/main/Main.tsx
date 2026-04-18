@@ -95,7 +95,9 @@ export const Main: React.FC = () => {
                 percent={Math.round((monsterHealth / monsterMaxHealth) * 100)}
                 showInfo={false}
                 strokeColor={`hsl(${Math.round((monsterHealth / monsterMaxHealth) * 120)}, 80%, 45%)`}
+                size={[undefined as unknown as number, 25]}
               />
+              <span className={styles.healthText}>{monsterHealth} / {monsterMaxHealth}</span>
             </div>
           </Content>
         </Layout>
