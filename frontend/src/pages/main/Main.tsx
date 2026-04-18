@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Layout, Statistic } from "antd";
+import { Button, Layout, Progress, Statistic } from "antd";
 import styles from "./Main.module.css";
 import { Header, Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
@@ -12,6 +12,7 @@ export const Main: React.FC = () => {
   const [monsterLevel, setMonsterLevel] = useState<number>(1);
   const [monsterMaxHealth, setMonsterMaxHealth] = useState<number>(10);
   const [monsterHealth, setMonsterHealth] = useState<number>(monsterMaxHealth);
+  const [activeSkillId, setActiveSkillId] = useState<string | null>(null);
 
   const coinsRef = useRef(coins);
   const monsterMaxHealthRef = useRef(monsterMaxHealth);
@@ -80,6 +81,8 @@ export const Main: React.FC = () => {
                 key={skill.id}
                 skill={skill}
                 coins={coins}
+                isActive={activeSkillId === skill.id}
+                onEquip={() => setActiveSkillId(skill.id)}
                 onDamage={onDamage}
                 onUpgrade={onUpgrade}
                 onSpend={(cost) => { setCoins((c) => c - cost); }}
@@ -87,7 +90,13 @@ export const Main: React.FC = () => {
             ))}
           </Sider>
           <Content onClick={() => onDamage(1)}>
-            Click to earn coins
+            <div className={styles.healthBar}>
+              <Progress
+                percent={Math.round((monsterHealth / monsterMaxHealth) * 100)}
+                showInfo={false}
+                strokeColor={`hsl(${Math.round((monsterHealth / monsterMaxHealth) * 120)}, 80%, 45%)`}
+              />
+            </div>
           </Content>
         </Layout>
       </Layout>

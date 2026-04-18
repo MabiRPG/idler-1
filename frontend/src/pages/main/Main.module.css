@@ -14,6 +14,12 @@
       gap: 50px;
     }
 
+    .healthBar {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
     :global(.ant-layout-content) {
       display: flex;
       align-items: center;
